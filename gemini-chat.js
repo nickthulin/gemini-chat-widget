@@ -7,9 +7,17 @@
           return;
         }
 
-        const pageTitle = document.title || window.location.pathname;
+        const currentPath = window.location.pathname;
+        // ❌ Don't load if on /learn/manager pages
+        if (currentPath.startsWith("/learn/manager")) {
+          console.log("🚫 Gemini chat widget disabled on manager pages");
+          return;
+        }
 
-        // 💬 Create a modern button
+        const pageTitle = document.title || window.location.pathname;
+        const mainHeading = document.querySelector("h1")?.innerText || "";
+
+        // 💬 Create modern chat button
         const chatButton = document.createElement('button');
         chatButton.innerText = 'Chat';
         Object.assign(chatButton.style, {
@@ -28,7 +36,7 @@
         });
         document.body.appendChild(chatButton);
 
-        // 🪟 Create the chat window (hidden initially)
+        // 🪟 Create chat window
         const chatWindow = document.createElement('div');
         Object.assign(chatWindow.style, {
           position: 'fixed',
@@ -40,12 +48,16 @@
           border: '1px solid #ccc',
           borderRadius: '10px',
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-          display: 'none',
+          transform: 'translateY(500px)', /* Start hidden below */
+          transition: 'transform 0.4s ease',
           flexDirection: 'column',
           padding: '16px',
           zIndex: '9998',
-          fontFamily: 'sans-serif'
+          fontFamily: 'sans-serif',
+          display: 'flex'
         });
+        chatWindow.style.visibility = "hidden"; // Start hidden
+        document.body.appendChild(chatWindow);
 
         chatWindow.innerHTML = `
           <div style="font-weight:bold;margin-bottom:8px;">Ask about: "${pageTitle}"</div>
@@ -53,11 +65,22 @@
           <button id="gemini-send" style="padding:8px;background:#0078D4;color:white;border:none;border-radius:4px;width:100%;cursor:pointer;margin-bottom:8px;">Send</button>
           <div id="gemini-response" style="flex-grow:1;overflow-y:auto;font-size:14px;color:#333;border-top:1px solid #eee;padding-top:8px;"></div>
         `;
-        document.body.appendChild(chatWindow);
 
-        // 🎯 Clicking the Chat button toggles the window
+        let chatOpen = false;
+
+        // 🎯 Clicking the Chat button toggles open/close with animation
         chatButton.addEventListener('click', function () {
-          chatWindow.style.display = (chatWindow.style.display === 'none') ? 'flex' : 'none';
+          if (!chatOpen) {
+            chatWindow.style.visibility = "visible";
+            chatWindow.style.transform = "translateY(0)";
+            chatOpen = true;
+          } else {
+            chatWindow.style.transform = "translateY(500px)";
+            setTimeout(() => {
+              chatWindow.style.visibility = "hidden";
+            }, 400);
+            chatOpen = false;
+          }
         });
 
         // 🎯 Sending a message
@@ -67,7 +90,12 @@
             const responseBox = document.getElementById('gemini-response');
             if (!promptInput) return;
 
-            const fullPrompt = `The user is currently viewing the page titled "${pageTitle}". Their question is: ${promptInput}`;
+            // 🧠 Send extra page context
+            const fullPrompt = `
+              The user is currently on a page titled: "${pageTitle}".
+              The main heading (h1) on the page reads: "${mainHeading}".
+              Their question is: "${promptInput}".
+            `;
 
             responseBox.innerHTML = "<em>Thinking...</em>";
 
@@ -86,8 +114,8 @@
           }
         });
 
-        console.log("✅ Gemini chat widget with clean modern UI loaded");
-      }, 1500); // Delay for Thought Industries/other heavy pages
+        console.log("✅ Gemini chat widget with animation and smart page targeting loaded");
+      }, 1500);
     } catch (e) {
       console.error("Gemini chat widget error:", e);
     }
