@@ -7,10 +7,13 @@
           return;
         }
 
+        const pageTitle = document.title || window.location.pathname;
+
         // 💬 Create chat bubble
         const bubble = document.createElement("div");
         bubble.id = "gemini-chat-bubble";
         bubble.textContent = "💬";
+        bubble.title = `Chat about: "${pageTitle}"`; // ← Tooltip showing current page
         Object.assign(bubble.style, {
           position: "fixed",
           bottom: "24px",
@@ -69,7 +72,6 @@
             const responseBox = document.getElementById("gemini-response");
             if (!promptInput) return;
 
-            const pageTitle = document.title || window.location.pathname;
             const fullPrompt = `The user is currently viewing the page titled "${pageTitle}". Their question is: ${promptInput}`;
 
             responseBox.innerHTML = "<em>Thinking...</em>";
@@ -88,8 +90,8 @@
           }
         });
 
-        console.log("✅ Gemini chat widget loaded");
-      }, 1500); // Delay to avoid race conditions
+        console.log("✅ Gemini chat widget with page title tooltip loaded");
+      }, 1500); // Delay for Thought Industries scripts
     } catch (e) {
       console.error("Gemini chat widget error:", e);
     }
