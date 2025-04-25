@@ -49,6 +49,7 @@
           zIndex: 9999,
           fontFamily: "sans-serif"
         });
+
         chatWindow.innerHTML = `
           <div style="font-weight:bold;">Ask Gemini</div>
           <input type="text" id="gemini-prompt" placeholder="Ask me anything..." style="width:100%;padding:6px;font-size:14px;" />
@@ -64,19 +65,22 @@
 
         document.addEventListener("click", function (e) {
           if (e.target && e.target.id === "gemini-send") {
-            const prompt = document.getElementById("gemini-prompt").value;
+            const promptInput = document.getElementById("gemini-prompt").value;
             const responseBox = document.getElementById("gemini-response");
-            if (!prompt) return;
+            if (!promptInput) return;
+
+            const pageTitle = document.title || window.location.pathname;
+            const fullPrompt = `The user is currently viewing the page titled "${pageTitle}". Their question is: ${promptInput}`;
 
             responseBox.innerHTML = "<em>Thinking...</em>";
             fetch("https://gemini-chat-1041125844271.us-central1.run.app/gemini-chat", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ prompt })
+              body: JSON.stringify({ prompt: fullPrompt })
             })
               .then(res => res.json())
               .then(data => {
-                responseBox.innerText = data.text || data.error;
+                responseBox.innerText = data.text || data.error || "No response.";
               })
               .catch(err => {
                 responseBox.innerText = "Error: " + err.message;
