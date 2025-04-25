@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gemini Chat</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: #f7f9fa;
+    }
+    h1 {
+      color: #013384;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 0.5rem;
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 400px;
+    }
+    #response {
+      margin-top: 1rem;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ask Gemini</h1>
+  <input type="text" id="prompt" placeholder="Ask me anything..." />
+  <button onclick="askGemini()">Submit</button>
+  <div id="response"></div>
+
+  <script>
+    async function askGemini() {
+      const prompt = document.getElementById("prompt").value;
+      const resBox = document.getElementById("response");
+      resBox.innerHTML = "Thinking...";
+      try {
+        const res = await fetch("/gemini-chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        resBox.textContent = data.text || data.error || "No response";
+      } catch (e) {
+        resBox.textContent = "Error: " + e.message;
+      }
+    }
+  </script>
+</body>
+</html>
