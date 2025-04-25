@@ -1,105 +1,44 @@
-(function () {
-  function initGeminiChat() {
-    try {
-      setTimeout(() => {
-        if (!document.body) {
-          console.error("❌ document.body not available. Chat widget cannot mount.");
-          return;
-        }
+<script type="text/javascript">
+  (function() {
+    // Wait until the page has fully loaded
+    window.addEventListener('load', function() {
+      // Create the chat button
+      const chatButton = document.createElement('button');
+      chatButton.innerText = 'Chat';
+      chatButton.style.position = 'fixed';
+      chatButton.style.bottom = '20px';
+      chatButton.style.right = '20px';
+      chatButton.style.zIndex = '9999';
+      chatButton.style.padding = '12px 18px';
+      chatButton.style.backgroundColor = '#0078D4';
+      chatButton.style.color = '#fff';
+      chatButton.style.border = 'none';
+      chatButton.style.borderRadius = '50px';
+      chatButton.style.cursor = 'pointer';
+      chatButton.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+      
+      document.body.appendChild(chatButton);
 
-        const pageTitle = document.title || window.location.pathname;
+      // Create the chat iframe (hidden by default)
+      const chatIframe = document.createElement('iframe');
+      chatIframe.src = 'https://example.com';  // Replace with your chatbot URL later
+      chatIframe.style.position = 'fixed';
+      chatIframe.style.bottom = '80px';
+      chatIframe.style.right = '20px';
+      chatIframe.style.width = '400px';
+      chatIframe.style.height = '500px';
+      chatIframe.style.border = 'none';
+      chatIframe.style.zIndex = '9998';
+      chatIframe.style.display = 'none';
+      chatIframe.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+      chatIframe.style.borderRadius = '10px';
+      
+      document.body.appendChild(chatIframe);
 
-        // 💬 Create chat bubble
-        const bubble = document.createElement("div");
-        bubble.id = "gemini-chat-bubble";
-        bubble.textContent = "💬";
-        bubble.title = `Chat about: "${pageTitle}"`; // ← Tooltip showing current page
-        Object.assign(bubble.style, {
-          position: "fixed",
-          bottom: "24px",
-          right: "24px",
-          backgroundColor: "#0080FF",
-          color: "white",
-          borderRadius: "50%",
-          width: "56px",
-          height: "56px",
-          fontSize: "28px",
-          textAlign: "center",
-          lineHeight: "56px",
-          cursor: "pointer",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-          zIndex: 9999
-        });
-        document.body.appendChild(bubble);
-
-        // 🪟 Create chat window
-        const chatWindow = document.createElement("div");
-        chatWindow.id = "gemini-chat-window";
-        Object.assign(chatWindow.style, {
-          position: "fixed",
-          bottom: "90px",
-          right: "24px",
-          width: "320px",
-          maxHeight: "400px",
-          background: "white",
-          border: "1px solid #ccc",
-          borderRadius: "12px",
-          padding: "12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-          display: "none",
-          flexDirection: "column",
-          gap: "8px",
-          zIndex: 9999,
-          fontFamily: "sans-serif"
-        });
-
-        chatWindow.innerHTML = `
-          <div style="font-weight:bold;">Ask Gemini</div>
-          <input type="text" id="gemini-prompt" placeholder="Ask me anything..." style="width:100%;padding:6px;font-size:14px;" />
-          <button id="gemini-send" style="padding:6px;background:#0080FF;color:white;border:none;border-radius:4px;width:100%;cursor:pointer;">Send</button>
-          <div id="gemini-response" style="max-height:200px;overflow-y:auto;font-size:14px;color:#333;"></div>
-        `;
-        document.body.appendChild(chatWindow);
-
-        bubble.addEventListener("click", () => {
-          chatWindow.style.display = chatWindow.style.display === "flex" ? "none" : "flex";
-          chatWindow.style.flexDirection = "column";
-        });
-
-        document.addEventListener("click", function (e) {
-          if (e.target && e.target.id === "gemini-send") {
-            const promptInput = document.getElementById("gemini-prompt").value;
-            const responseBox = document.getElementById("gemini-response");
-            if (!promptInput) return;
-
-            const fullPrompt = `The user is currently viewing the page titled "${pageTitle}". Their question is: ${promptInput}`;
-
-            responseBox.innerHTML = "<em>Thinking...</em>";
-            fetch("https://gemini-chat-1041125844271.us-central1.run.app/gemini-chat", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ prompt: fullPrompt })
-            })
-              .then(res => res.json())
-              .then(data => {
-                responseBox.innerText = data.text || data.error || "No response.";
-              })
-              .catch(err => {
-                responseBox.innerText = "Error: " + err.message;
-              });
-          }
-        });
-
-        console.log("✅ Gemini chat widget with page title tooltip loaded");
-      }, 1500); // Delay for Thought Industries scripts
-    } catch (e) {
-      console.error("Gemini chat widget error:", e);
-    }
-  }
-
-  if (document.readyState === "complete") {
-    initGeminiChat();
-  } else {
-    window.addEventListener("load", initGeminiChat);
-  }
-})();
+      // Toggle iframe visibility
+      chatButton.addEventListener('click', function() {
+        chatIframe.style.display = (chatIframe.style.display === 'none') ? 'block' : 'none';
+      });
+    });
+  })();
+</script>
